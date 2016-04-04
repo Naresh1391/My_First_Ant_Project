@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="AntProject">
+	
+	
+	<target name="clean">
+		<delete dir="build"></delete>
+	</target>
+	
+	<target name="compile" depends="clean">
+		<mkdir dir="build"/>
+		<mkdir dir="TestReports"/>
+		<javac destdir="build" srcdir="src">
+		<classpath>
+		<pathelement location="lib/junit.jar"/>
+		</classpath>
+		</javac>
+	</target>
+	
+	<target name="RunTest" depends="compile">
+		<junit printsummary="yes"
+		showoutput="true"
+		includeantruntime="true"
+		haltonfailure="true">
+			<classpath>
+				<pathelement location="lib/junit.jar"/>
+				<pathelement location="build"/>
+			</classpath>
+			<batchtest todir="TestReports">
+			<formatter type="xml"/>
+				<fileset dir="build">
+				<include name="com/ci/*.*"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="report" depends="RunTest">
+	<junitreport todir="TestReports">
+	<fileset dir="TestReports">
+	<include name="*.xml"/>
+	</fileset>
+		<report todir="TestReports" format="frames"/>
+	</junitreport>
+	</target>
+
+	
+	<target name="BuildJar" depends="report">
+	<echo message="Running the jar task..!!"/>
+		<jar includes="com/ci/*.class" basedir="build" destfile="build/app.jar"/>
+	</target>
+
+</project>
